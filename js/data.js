@@ -1,80 +1,100 @@
-/* =========================================================================
- * data.js — Static reference data and sample (seed) data for the demo.
- * Sample leave requests are generated RELATIVE TO TODAY so the demo always
- * shows a realistic mix of past, current and upcoming leave.
- * ========================================================================= */
-(function (global) {
-  'use strict';
+/* ==========================================================
+   Static configuration + sample (seed) data
+   Sample request dates are generated relative to "today" so the
+   demo always looks current whenever the app is opened.
+   ========================================================== */
+const LEAVE_TYPES = [
+  { id: "annual",      name: "Annual Leave",      allowance: 20,   color: "#4f46e5", icon: "🌴" },
+  { id: "sick",        name: "Sick Leave",        allowance: 10,   color: "#ef4444", icon: "🤒" },
+  { id: "personal",    name: "Personal Leave",    allowance: 5,    color: "#0ea5e9", icon: "🏠" },
+  { id: "parental",    name: "Parental Leave",    allowance: 15,   color: "#db2777", icon: "👶" },
+  { id: "bereavement", name: "Bereavement Leave", allowance: 5,    color: "#64748b", icon: "🕊️" },
+  { id: "unpaid",      name: "Unpaid Leave",      allowance: null, color: "#f59e0b", icon: "💼" }, // null = no limit
+];
 
-  /** Leave types and their yearly allowance (in working days). null = unlimited. */
-  const LEAVE_TYPES = [
-    { id: 'annual',   name: 'Annual Leave',   allowance: 20,   color: '#4f46e5', icon: '🏖️' },
-    { id: 'sick',     name: 'Sick Leave',     allowance: 10,   color: '#e11d48', icon: '🤒' },
-    { id: 'casual',   name: 'Casual Leave',   allowance: 6,    color: '#0891b2', icon: '☕' },
-    { id: 'parental', name: 'Parental Leave', allowance: 30,   color: '#d97706', icon: '👶' },
-    { id: 'unpaid',   name: 'Unpaid Leave',   allowance: null, color: '#64748b', icon: '📄' }
-  ];
+const SAMPLE_EMPLOYEES = [
+  { id: "emp-1", name: "Ava Thompson",   department: "Engineering", title: "Senior Developer",   color: "#4f46e5" },
+  { id: "emp-2", name: "Liam Patel",     department: "Engineering", title: "QA Engineer",        color: "#0891b2" },
+  { id: "emp-3", name: "Sofia Garcia",   department: "Marketing",   title: "Marketing Lead",     color: "#db2777" },
+  { id: "emp-4", name: "Noah Kim",       department: "Sales",       title: "Account Executive",  color: "#16a34a" },
+  { id: "emp-5", name: "Emma Johansson", department: "HR",          title: "HR Generalist",      color: "#9333ea" },
+  { id: "emp-6", name: "Mateo Rossi",    department: "Finance",     title: "Financial Analyst",  color: "#ea580c" },
+  { id: "emp-7", name: "Chloe Dubois",   department: "Design",      title: "Product Designer",   color: "#0d9488" },
+  { id: "emp-8", name: "Ethan Nguyen",   department: "Sales",       title: "Sales Manager",      color: "#2563eb" },
+];
 
-  const STATUSES = ['Pending', 'Approved', 'Rejected', 'Cancelled'];
+/**
+ * Seed definitions. `start` is a calendar-day offset from today (snapped
+ * forward to the next weekday) and `days` is the number of working days.
+ * `submitted` is a calendar-day offset (negative = in the past).
+ */
+const SEED_REQUESTS = [
+  // --- Currently on leave (today) ---
+  { emp: "emp-3", type: "annual",   start: 0,    days: 3, status: "Approved", submitted: -14, reason: "Family trip to the coast.", comment: "Enjoy your break!" },
+  { emp: "emp-6", type: "sick",     start: 0,    days: 1, status: "Approved", submitted: -1,  reason: "Flu symptoms, doctor advised rest.", comment: "Get well soon." },
 
-  const MANAGER = { id: 'MGR-01', name: 'Priya Sharma', role: 'HR & Operations Manager' };
+  // --- Pending (future) ---
+  { emp: "emp-1", type: "annual",   start: 14,   days: 5, status: "Pending",  submitted: -2,  reason: "Holiday abroad booked with family." },
+  { emp: "emp-2", type: "annual",   start: 15,   days: 3, status: "Pending",  submitted: -1,  reason: "Attending a friend's wedding." },
+  { emp: "emp-4", type: "personal", start: 7,    days: 1, status: "Pending",  submitted: -3,  reason: "Moving to a new apartment." },
+  { emp: "emp-7", type: "annual",   start: 28,   days: 4, status: "Pending",  submitted: 0,   reason: "Design conference + a few rest days." },
+  { emp: "emp-5", type: "unpaid",   start: 40,   days: 2, status: "Pending",  submitted: -4,  reason: "Extended personal travel." },
+  { emp: "emp-8", type: "parental", start: 21,   days: 10, status: "Pending", submitted: -6,  reason: "Welcoming our second child." },
 
-  const EMPLOYEES = [
-    { id: 'EMP-101', name: 'Alex Johnson',   role: 'Senior Frontend Developer', department: 'Engineering', email: 'alex.johnson@example.com',   color: '#4f46e5' },
-    { id: 'EMP-102', name: 'Maria Garcia',   role: 'UX Designer',               department: 'Design',      email: 'maria.garcia@example.com',   color: '#db2777' },
-    { id: 'EMP-103', name: 'David Chen',     role: 'Backend Engineer',          department: 'Engineering', email: 'david.chen@example.com',     color: '#059669' },
-    { id: 'EMP-104', name: 'Aisha Patel',    role: 'Marketing Specialist',      department: 'Marketing',   email: 'aisha.patel@example.com',    color: '#d97706' },
-    { id: 'EMP-105', name: 'James Wilson',   role: 'Sales Executive',           department: 'Sales',       email: 'james.wilson@example.com',   color: '#0891b2' },
-    { id: 'EMP-106', name: 'Sofia Rossi',    role: 'HR Generalist',             department: 'Human Resources', email: 'sofia.rossi@example.com', color: '#7c3aed' },
-    { id: 'EMP-107', name: 'Liam O\'Brien',  role: 'QA Engineer',               department: 'Engineering', email: 'liam.obrien@example.com',    color: '#16a34a' },
-    { id: 'EMP-108', name: 'Yuki Tanaka',    role: 'Product Manager',           department: 'Product',     email: 'yuki.tanaka@example.com',    color: '#ea580c' }
-  ];
+  // --- Future approved ---
+  { emp: "emp-1", type: "personal", start: 4,    days: 1, status: "Approved", submitted: -10, reason: "Personal appointment.", comment: "Approved." },
+  { emp: "emp-5", type: "annual",   start: 10,   days: 2, status: "Approved", submitted: -12, reason: "Long weekend getaway.", comment: "" },
 
-  /** Fixed-date public holidays (MM-DD). Excluded from working-day counts. */
-  const HOLIDAYS = [
-    { md: '01-01', name: "New Year's Day" },
-    { md: '05-01', name: 'Labour Day' },
-    { md: '12-25', name: 'Christmas Day' },
-    { md: '12-26', name: 'Boxing Day' }
-  ];
+  // --- Past approved ---
+  { emp: "emp-1", type: "annual",   start: -60,  days: 5, status: "Approved", submitted: -80, reason: "Summer vacation.", comment: "Have fun!" },
+  { emp: "emp-1", type: "sick",     start: -30,  days: 2, status: "Approved", submitted: -30, reason: "Migraine.", comment: "" },
+  { emp: "emp-2", type: "sick",     start: -20,  days: 1, status: "Approved", submitted: -20, reason: "Dental surgery recovery.", comment: "" },
+  { emp: "emp-3", type: "sick",     start: -45,  days: 3, status: "Approved", submitted: -45, reason: "Recovering from a cold.", comment: "" },
+  { emp: "emp-4", type: "annual",   start: -75,  days: 8, status: "Approved", submitted: -100, reason: "Annual trip to visit family overseas.", comment: "Approved — coverage arranged with Ethan." },
+  { emp: "emp-6", type: "annual",   start: -40,  days: 4, status: "Approved", submitted: -55, reason: "Short holiday.", comment: "" },
+  { emp: "emp-7", type: "bereavement", start: -25, days: 3, status: "Approved", submitted: -26, reason: "Family bereavement.", comment: "Our condolences. Take the time you need." },
+  { emp: "emp-8", type: "annual",   start: -15,  days: 2, status: "Approved", submitted: -30, reason: "Long weekend.", comment: "" },
 
-  /**
-   * Seed request templates. Offsets are in calendar days relative to today;
-   * start dates that fall on weekends are moved to the next Monday.
-   * span = number of WORKING days (the end date is calculated).
-   */
-  const SEED_TEMPLATES = [
-    // ---- Pending (awaiting manager action) ----
-    { emp: 'EMP-101', type: 'annual',   start: 12,  span: 5, status: 'Pending',  applied: -2, reason: 'Family trip to the mountains.' },
-    { emp: 'EMP-102', type: 'casual',   start: 4,   span: 1, status: 'Pending',  applied: -1, reason: 'Moving to a new apartment.' },
-    { emp: 'EMP-104', type: 'annual',   start: 21,  span: 3, status: 'Pending',  applied: -3, reason: 'Attending a friend\'s wedding.' },
-    { emp: 'EMP-105', type: 'sick',     start: 1,   span: 2, status: 'Pending',  applied: 0,  reason: 'Doctor-advised rest after minor surgery.' },
-    { emp: 'EMP-108', type: 'annual',   start: 30,  span: 4, status: 'Pending',  applied: -1, reason: 'Year-end vacation with family.' },
-    { emp: 'EMP-107', type: 'casual',   start: 7,   span: 1, status: 'Pending',  applied: 0,  reason: 'Personal errands — bank and visa paperwork.', halfDay: true },
+  // --- Rejected ---
+  { emp: "emp-2", type: "annual",   start: -10,  days: 5, status: "Rejected", submitted: -25, reason: "Ski trip.", comment: "Conflicts with the release window. Please choose other dates." },
+  { emp: "emp-4", type: "unpaid",   start: -5,   days: 3, status: "Rejected", submitted: -18, reason: "Personal project.", comment: "End-of-quarter sales push — not possible this time." },
+  { emp: "emp-6", type: "personal", start: 20,   days: 2, status: "Rejected", submitted: -5,  reason: "Personal errands.", comment: "Month-end close. Could you move this a week later?" },
 
-    // ---- Approved (past, current and upcoming) ----
-    { emp: 'EMP-101', type: 'annual',   start: -120, span: 5, status: 'Approved', applied: -140, reason: 'Summer holiday.', note: 'Enjoy your break!' },
-    { emp: 'EMP-101', type: 'sick',     start: -45,  span: 2, status: 'Approved', applied: -45,  reason: 'Flu.', note: 'Get well soon.' },
-    { emp: 'EMP-102', type: 'annual',   start: -60,  span: 8, status: 'Approved', applied: -90,  reason: 'Vacation in Spain.', note: 'Approved — handover done.' },
-    { emp: 'EMP-103', type: 'annual',   start: -1,   span: 4, status: 'Approved', applied: -20,  reason: 'Short getaway.', note: 'Approved.' },
-    { emp: 'EMP-103', type: 'casual',   start: -150, span: 1, status: 'Approved', applied: -155, reason: 'Home maintenance appointment.', note: '' },
-    { emp: 'EMP-104', type: 'sick',     start: -30,  span: 3, status: 'Approved', applied: -30,  reason: 'Migraine and recovery.', note: 'Take care.' },
-    { emp: 'EMP-105', type: 'annual',   start: 9,    span: 3, status: 'Approved', applied: -15,  reason: 'Long weekend trip.', note: 'Approved, please update your CRM tasks.' },
-    { emp: 'EMP-106', type: 'parental', start: -10,  span: 15, status: 'Approved', applied: -50, reason: 'Paternity leave for newborn.', note: 'Congratulations!' },
-    { emp: 'EMP-107', type: 'annual',   start: -80,  span: 6, status: 'Approved', applied: -100, reason: 'Family visit abroad.', note: 'Approved.' },
-    { emp: 'EMP-108', type: 'casual',   start: -25,  span: 1, status: 'Approved', applied: -27,  reason: 'Child\'s school event.', note: '' },
-    { emp: 'EMP-108', type: 'annual',   start: -200, span: 10, status: 'Approved', applied: -230, reason: 'Spring vacation.', note: 'Approved.' },
-    { emp: 'EMP-102', type: 'unpaid',   start: -170, span: 3, status: 'Approved', applied: -185, reason: 'Extended personal travel.', note: 'Approved as unpaid leave.' },
+  // --- Cancelled ---
+  { emp: "emp-3", type: "personal", start: -35,  days: 1, status: "Cancelled", submitted: -40, reason: "Appointment (rescheduled)." },
+  { emp: "emp-7", type: "annual",   start: 35,   days: 2, status: "Cancelled", submitted: -8,  reason: "Plans changed." },
+];
 
-    // ---- Rejected ----
-    { emp: 'EMP-101', type: 'casual',   start: -70,  span: 2, status: 'Rejected', applied: -75,  reason: 'Personal time off.', note: 'Release week — please choose different dates.' },
-    { emp: 'EMP-104', type: 'annual',   start: -5,   span: 5, status: 'Rejected', applied: -12,  reason: 'Vacation.', note: 'Campaign launch week, team coverage too low.' },
-    { emp: 'EMP-105', type: 'annual',   start: -95,  span: 7, status: 'Rejected', applied: -100, reason: 'Travel.', note: 'Quarter-end sales close.' },
+/** Build concrete leave requests from the seed definitions. */
+function buildSampleRequests() {
+  const base = Utils.today();
+  return SEED_REQUESTS.map((s, i) => {
+    const start = Utils.nextWeekday(Utils.addDays(base, s.start));
+    const end = Utils.addWorkingDays(start, s.days);
+    const submittedAt = Utils.addDays(base, s.submitted);
+    submittedAt.setHours(9 + (i % 8), (i * 7) % 60);
 
-    // ---- Cancelled by employee ----
-    { emp: 'EMP-103', type: 'annual',   start: 40,   span: 2, status: 'Cancelled', applied: -6,  reason: 'Concert trip (plans changed).' },
-    { emp: 'EMP-107', type: 'sick',     start: -55,  span: 1, status: 'Cancelled', applied: -56, reason: 'Dental appointment (rescheduled).' }
-  ];
+    const req = {
+      id: `req-${String(i + 1).padStart(3, "0")}`,
+      employeeId: s.emp,
+      type: s.type,
+      startDate: Utils.toISODate(start),
+      endDate: Utils.toISODate(end),
+      days: s.days,
+      halfDay: false,
+      reason: s.reason,
+      status: s.status,
+      submittedAt: submittedAt.toISOString(),
+      decidedAt: null,
+      managerComment: s.comment || "",
+    };
 
-  global.LeaveData = Object.freeze({ LEAVE_TYPES, STATUSES, MANAGER, EMPLOYEES, HOLIDAYS, SEED_TEMPLATES });
-})(window);
+    if (s.status === "Approved" || s.status === "Rejected" || s.status === "Cancelled") {
+      const decided = new Date(submittedAt);
+      decided.setDate(decided.getDate() + 1);
+      // never later than now
+      req.decidedAt = (decided > new Date() ? new Date() : decided).toISOString();
+    }
+    return req;
+  });
+}
