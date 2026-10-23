@@ -1,142 +1,138 @@
-# 🌿 LeaveFlow — Employee Leave Manager
+# 🗓️ Employee Leave Manager
 
-A modern, interactive **Employee Leave Management** web application built with plain **HTML, CSS and JavaScript** — no frameworks, no build step, no backend.
-All data is stored in the browser using **`localStorage`**, and the app ships with sample employees and leave requests so it can be demonstrated immediately.
+A modern, interactive **Employee Leave Management** web application built with plain **HTML, CSS, and JavaScript** — no frameworks, no build step, no backend. All data is stored in the browser's **localStorage**, and the app ships with sample employees and leave requests so it can be demonstrated immediately.
 
 ---
 
 ## ✨ Features
 
-### 👤 Employee Portal
-- **Demo sign-in switcher** – pick any of the 8 sample employees to act as them.
-- **Leave balance cards** for each leave type, showing available, used and pending days with progress bars.
-- **Leave request form**
-  - Choose a leave type, start/end dates, optional **half day** (single-day requests) and a reason.
-  - Live summary of **working days** requested (weekends and public holidays are excluded automatically) versus the available balance.
-  - Validation: required fields, end ≥ start, no past dates (sick leave can be back-dated up to 30 days), max 120 calendar days, no overlap with your own pending/approved leave, and sufficient balance.
-- **Status tracker** – counts per status and a 3-step progress tracker (Submitted → Manager review → Decision) for the latest request, including the manager's comment.
-- **Upcoming approved leave** and upcoming **public holidays**.
-- **Leave history** table with status filters; cancel pending requests or withdraw approved leave that hasn't started yet.
+### 👤 Employee view
+- **Switch between sample employees** (simulated sign-in) to see each person's data.
+- **Leave balance cards** for every leave type showing remaining, used, and pending days with a progress bar.
+- **Submit leave requests** with leave type, start/end dates, optional **half day**, and a reason.
+  - Live calculation of **working days** (weekends excluded) and remaining balance.
+  - Validation: end date after start date, no weekend-only requests, no overlap with existing requests, sufficient balance, and no past dates (except Sick and Bereavement leave, which can be logged retroactively).
+- **Leave history** with status badges, a status timeline (Submitted → Under review → Decision), manager comments, and a status filter.
+- **Cancel** pending requests.
 
-### 📊 Manager Dashboard
-- **Statistics cards**: total requests, pending, approved, rejected, approval rate, approved days this year and employees on leave today (click a card to filter the table).
-- **Charts** (pure CSS): requests by status (donut), approved days by leave type and by department.
-- **Who's out** in the next 14 days and **team annual-leave balances**.
-- **Requests table** with status filter chips, search (employee, department, reason, ID), leave-type and department filters, and sorting.
-- **Approve / Reject** workflow in a modal with balance check, warning if approval exceeds the balance, team-overlap warning, and comments (a reason is required to reject).
-- Pending-count badge on the dashboard tab.
+### 📊 Manager dashboard
+- **Statistics**: total requests, pending, approved, rejected, approval rate, days approved this year, and upcoming approved leave.
+- **Charts**: approved days by leave type and requests by department.
+- **Out of office today** list.
+- **Requests table** with:
+  - **Status filter tabs** (All / Pending / Approved / Rejected / Cancelled) with live counts
+  - Search by employee, department, or reason
+  - Leave-type filter and sorting
+  - **Team overlap warnings** when colleagues in the same department are off at the same time
+- **Approve or reject** with one click or through a review dialog. A comment is required when rejecting.
 
-### 🧩 General
-- Light / **dark mode** toggle (remembered).
-- Responsive layout (tables turn into cards on mobile), keyboard accessible, `Esc` closes dialogs.
-- **Reset demo data** button restores the original sample data.
-- Changes sync between open browser tabs.
-
----
-
-## 🗂️ Project structure
-
-```
-employee-leave-manager/
-├── index.html            # App shell: header, Employee Portal, Manager Dashboard, modal
-├── css/
-│   └── styles.css        # Theme variables, layout, components, dark mode, responsive rules
-├── js/
-│   ├── data.js           # Leave types, employees, manager, holidays and sample-request templates
-│   ├── leave-utils.js    # Date helpers, working-day counting, balance calculation, HTML escaping
-│   ├── storage.js        # localStorage load/save/reset + demo seed generation
-│   └── app.js            # UI rendering, events, validation, approval workflow
-├── assets/
-│   └── favicon.svg       # App icon
-└── README.md
-```
+### 🎨 General
+- Responsive layout for desktop, tablet, and mobile
+- Light and dark mode (remembered between visits)
+- Toast notifications and accessible markup (ARIA roles, labels, keyboard Escape to close dialogs)
+- **Reset demo data** button to restore the original sample data
+- User input is HTML-escaped before rendering
 
 ---
 
-## 🚀 Run locally
+## 🗂️ Leave types & annual allowances
 
-### Option 1 — Open the file directly (simplest)
-1. Clone or download the repository:
+| Leave type | Allowance (days/year) |
+|---|---|
+| 🌴 Annual Leave | 20 |
+| 🤒 Sick Leave | 10 |
+| 🏠 Personal Leave | 5 |
+| 👶 Parental Leave | 15 |
+| 🕊️ Bereavement Leave | 5 |
+| 💼 Unpaid Leave | No limit |
+
+Allowances are configured in `js/data.js` (`LEAVE_TYPES`).
+
+## 👥 Sample data
+
+- **8 employees** across Engineering, Marketing, Sales, HR, Finance, and Design
+- **23 leave requests**: 6 pending, 12 approved, 3 rejected, 2 cancelled
+
+Sample dates are generated **relative to today** when the data is first loaded, so the demo always shows current, upcoming, and past leave.
+
+---
+
+## 🚀 Running locally
+
+No installation or build step is required.
+
+### Option 1 — Open the file directly
+1. Clone the repository:
    ```bash
    git clone https://github.com/techbliss1/employee-leave-manager.git
    cd employee-leave-manager
    ```
-2. Double-click **`index.html`** (or open it from your browser with *File → Open*).
-
-> The app uses classic `<script>` tags (no ES modules), so it works straight from the file system.
+2. Double-click `index.html` (or open it from your browser with **File → Open**).
 
 ### Option 2 — Use a local web server (recommended)
-Any static server works. For example:
+From the project folder, run one of the following:
 
 ```bash
 # Python 3
 python -m http.server 8080
 
-# or Node.js
+# Node.js
 npx serve .
 ```
 
-Then open **http://localhost:8080** in your browser.
+Then open **http://localhost:8080** (or the URL shown by `serve`) in your browser.
 
-### Option 3 — VS Code Live Server
-Open the folder in VS Code, install the **Live Server** extension, right-click `index.html` → **Open with Live Server**.
-
-### Option 4 — GitHub Pages (optional)
-In the repository go to **Settings → Pages**, choose **Deploy from a branch**, select `main` / `root`, and save. The app will be available at `https://techbliss1.github.io/employee-leave-manager/`.
+> 💡 VS Code users can also use the **Live Server** extension: right-click `index.html` → **Open with Live Server**.
 
 ---
 
-## 🎬 Demo walkthrough
+## 🧭 How to use the demo
 
-1. **Employee Portal** – you start as *Alex Johnson*. Review the balance cards and history.
-2. Submit a new request (e.g. *Annual Leave*, next week, 2 days). Watch the live day count and the balance update in the *pending* bar.
-3. Try an invalid request (overlapping dates or more days than available) to see validation messages.
-4. Switch to **Manager Dashboard** – the new request appears in the *Pending* list with a badge on the tab.
-5. **Approve** or **Reject** (rejection requires a comment). Statistics and charts update instantly.
-6. Go back to the Employee Portal – the status tracker shows the decision and manager's note.
-7. Use **↺ Reset demo data** at any time to restore the sample data.
+1. **Employee view** (default): choose an employee from the *Signed in as* dropdown, review balances, and submit a new request.
+2. Switch to **Manager Dashboard**: the new request appears under **Pending**. Approve it, or reject it with a comment.
+3. Switch back to the **Employee** view to see the updated status, timeline, manager comment, and balance.
+4. Click **↺ Reset demo data** at any time to restore the original sample data.
 
 ---
 
-## 📚 Sample data
+## 📁 Project structure
 
-| Item | Details |
+```
+employee-leave-manager/
+├── index.html        # App layout: header, employee view, manager dashboard, modal
+├── assets/
+│   └── favicon.svg   # App icon
+├── css/
+│   └── styles.css    # Theme variables (light/dark), layout, components, responsive rules
+├── js/
+│   ├── utils.js      # Date helpers, working-day calculation, formatting, HTML escaping, toasts
+│   ├── data.js       # Leave types, sample employees, and sample request generator
+│   ├── storage.js    # localStorage persistence + business rules (balances, validation, approve/reject/cancel)
+│   ├── employee.js   # Employee view: balances, request form, leave history
+│   ├── manager.js    # Manager dashboard: stats, charts, filters, approval workflow
+│   └── app.js        # Bootstrap: view switching, theme toggle, reset, cross-tab sync
+└── README.md
+```
+
+## 💾 Data storage
+
+| localStorage key | Contents |
 |---|---|
-| Employees | 8 employees across Engineering, Design, Marketing, Sales, Human Resources and Product |
-| Manager | Priya Sharma — HR & Operations Manager |
-| Leave requests | 23 requests: 6 Pending, 12 Approved, 3 Rejected, 2 Cancelled |
-| Dates | Generated **relative to today**, so the demo always shows past, current and upcoming leave |
+| `elm.data.v1` | Employees and leave requests |
+| `elm.settings.v1` | UI preferences (theme, current view, selected employee) |
 
-### Leave types & yearly allowances
+To clear everything, use **Reset demo data** or clear the site data in your browser's developer tools.
 
-| Leave type | Allowance (working days / year) |
-|---|---|
-| 🏖️ Annual Leave | 20 |
-| 🤒 Sick Leave | 10 |
-| ☕ Casual Leave | 6 |
-| 👶 Parental Leave | 30 |
-| 📄 Unpaid Leave | Unlimited |
+## ⚠️ Notes & limitations
 
-Public holidays excluded from day counts: New Year's Day (01‑01), Labour Day (05‑01), Christmas Day (12‑25), Boxing Day (12‑26).
+- This is a **front-end demo**: there is no authentication, and data is stored only in the current browser.
+- Working days exclude Saturdays and Sundays. Public holidays are not considered.
+- Balances are calculated per calendar year, based on each request's start date.
 
----
+## 🌐 Browser support
 
-## ⚙️ Customisation
+Latest versions of Chrome, Edge, Firefox, and Safari.
 
-- **Employees, leave types, allowances, holidays, sample requests** → edit `js/data.js`.
-- **Colours / theme** → edit the CSS variables at the top of `css/styles.css`.
-- After changing seed data, click **↺ Reset demo data** (or clear the `leaveflow.state.v1` key in your browser's localStorage) to reload it.
+## 📄 License
 
----
-
-## 🔒 Notes & limitations
-
-- This is a **front-end demo**. There is no authentication or server; the employee switcher and manager view are for demonstration only.
-- Data is stored only in the current browser's `localStorage`; clearing site data removes it.
-- All user-entered text is HTML-escaped before rendering.
-
-## 🧰 Tech stack
-
-HTML5 · CSS3 (custom properties, grid, `conic-gradient`, `color-mix`) · Vanilla JavaScript (ES2017+) · Web Storage API
-
-Works in current versions of Chrome, Edge, Firefox and Safari.
+MIT. Free to use and modify.
