@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Employee Leave Manager — submit, track and approve leave requests." />
+  <title>LeaveFlow · Employee Leave Manager</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌴</text></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">🌴</span>
+      <span class="brand-name">Leave<span>Flow</span></span>
+    </div>
+
+    <nav class="role-switch" role="tablist" aria-label="Choose view">
+      <button class="role-btn active" role="tab" data-role="employee" aria-selected="true">👤 Employee</button>
+      <button class="role-btn" role="tab" data-role="manager" aria-selected="false">
+        📊 Manager <span class="pill-count" id="pendingBadge" hidden>0</span>
+      </button>
+    </nav>
+
+    <div class="topbar-right">
+      <label class="user-select" id="employeeSelectWrap">
+        <span>Signed in as</span>
+        <select id="employeeSelect" aria-label="Select employee"></select>
+      </label>
+      <div class="manager-chip" id="managerChip" hidden>
+        <span class="avatar avatar-sm" style="--hue:280">PS</span>
+        <div><strong>Priya Sharma</strong><small>HR Manager</small></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="resetBtn" title="Restore the sample data">↺ Reset demo</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ================= EMPLOYEE VIEW ================= -->
+    <section id="employeeView" aria-labelledby="welcomeTitle">
+      <div class="page-head">
+        <div>
+          <h1 id="welcomeTitle">Hi there 👋</h1>
+          <p class="muted" id="welcomeSub"></p>
+        </div>
+        <p class="muted small" id="yearLabel"></p>
+      </div>
+
+      <div class="balance-grid" id="balanceGrid"></div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h2 class="card-title">📝 New leave request</h2>
+          <form id="leaveForm" novalidate>
+            <label class="field">
+              <span>Leave type</span>
+              <select id="leaveType" required></select>
+            </label>
+            <div class="field-row">
+              <label class="field">
+                <span>Start date</span>
+                <input type="date" id="startDate" required />
+              </label>
+              <label class="field">
+                <span>End date</span>
+                <input type="date" id="endDate" required />
+              </label>
+            </div>
+            <div class="duration" id="durationPreview">Select dates to see the duration.</div>
+            <label class="field">
+              <span>Reason</span>
+              <textarea id="reason" rows="3" maxlength="300" placeholder="Briefly describe the reason for your leave" required></textarea>
+            </label>
+            <p class="form-error" id="formError" role="alert" hidden></p>
+            <div class="form-actions">
+              <button type="reset" class="btn btn-ghost">Clear</button>
+              <button type="submit" class="btn btn-primary">Submit request</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <h2 class="card-title">📅 My leave history</h2>
+            <div class="chips" id="historyFilters">
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="pending">Pending</button>
+              <button class="chip" data-filter="approved">Approved</button>
+              <button class="chip" data-filter="rejected">Rejected</button>
+            </div>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= MANAGER VIEW ================= -->
+    <section id="managerView" hidden aria-labelledby="managerTitle">
+      <div class="page-head">
+        <div>
+          <h1 id="managerTitle">Manager dashboard</h1>
+          <p class="muted">Review requests, approve or reject leave, and monitor team availability.</p>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h2 class="card-title">📈 Leave days by type</h2>
+          <div class="bar-chart" id="typeChart"></div>
+          <div class="legend"><span><i class="lg lg-approved"></i>Approved</span><span><i class="lg lg-pending"></i>Pending</span></div>
+        </article>
+        <article class="card">
+          <h2 class="card-title">🗓️ Who's away (next 30 days)</h2>
+          <ul class="upcoming" id="upcomingList"></ul>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-head wrap">
+          <h2 class="card-title">📥 Leave requests</h2>
+          <div class="chips" id="statusTabs"></div>
+        </div>
+        <div class="toolbar">
+          <input type="search" id="searchInput" placeholder="Search by employee, reason or ID…" aria-label="Search requests" />
+          <select id="typeFilter" aria-label="Filter by leave type"></select>
+          <select id="deptFilter" aria-label="Filter by department"></select>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Reason</th><th>Submitted</th><th>Status</th><th class="right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="requestsBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer muted small">LeaveFlow demo · data is stored only in your browser's localStorage.</footer>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle"></h3>
+      <div id="modalBody" class="modal-body"></div>
+      <label class="field" id="modalCommentWrap" hidden>
+        <span id="modalCommentLabel">Comment</span>
+        <textarea id="modalComment" rows="3" maxlength="300"></textarea>
+      </label>
+      <p class="form-error" id="modalError" hidden></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel" type="button">Cancel</button>
+        <button class="btn btn-primary" id="modalConfirm" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
